@@ -13,12 +13,22 @@ const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || '';
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
 
 const server = http.createServer((req, res) => {
+  const cors = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, { ...cors, 'Content-Length': '0' });
+    res.end();
+    return;
+  }
   if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, { 'Content-Type': 'application/json', ...cors });
     res.end(JSON.stringify({ status: 'ok', voice: !!ELEVENLABS_API_KEY }));
     return;
   }
-  res.writeHead(404);
+  res.writeHead(404, cors);
   res.end();
 });
 
@@ -70,11 +80,9 @@ if (ELEVENLABS_API_KEY && WebSocketServer) {
               }
               currentTtsContextId = 'ctx_' + Date.now();
               const textWithSpace = text.replace(/\s+/g, ' ').trim() + ' ';
-              ttsWs.send(JSON.stringify({
-                text: textWithSpace,
-                context_id: currentTtsContextId,
-                voice_settings: { stability: 0.75, similarity_boost: 0.8 }
-              }));
+              const voiceSettings = { stability: 0.75, similarity_boost: 0.8 };
+              ttsWs.send(JSON.stringify({ text: ' ', context_id: currentTtsContextId, voice_settings: voiceSettings }));
+              ttsWs.send(JSON.stringify({ text: textWithSpace, context_id: currentTtsContextId, flush: false }));
               ttsWs.send(JSON.stringify({ context_id: currentTtsContextId, flush: true }));
             }
           } catch (_) {}
