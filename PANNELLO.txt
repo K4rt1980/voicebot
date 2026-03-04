@@ -1,0 +1,31 @@
+================================================================================
+  COSA INSERIRE NEL PANNELLO (Plesk / hosting) – Riepilogo veloce
+  (Se non puoi creare un sottodominio: usa il deploy in cloud, vedi CLOUD-DEPLOY.md)
+================================================================================
+
+1) NODE.JS (Plesk: Siti web e domini → tuo dominio/sottodominio → Node.js)
+   - Abilita applicazione Node.js
+   - Percorso applicazione / Document root: /voicebot (la cartella che hai caricato)
+   - File di avvio: server.js
+   - Modalità: Production
+
+2) VARIABILI D'AMBIENTE (nella stessa sezione Node.js)
+   - Nome:  ELEVENLABS_API_KEY
+   - Valore: la tua chiave API ElevenLabs (con permesso "Speech to Text" abilitato)
+
+3) PORTA (se richiesto)
+   - Puoi impostare PORT=3000 tra le variabili d'ambiente, oppure lasciare il default del pannello
+
+4) AVVIO
+   - Salva e clicca "Riavvia" / "Restart" sull'app Node.js
+
+5) VERIFICA
+   - Apri nel browser: https://voice.tuodominio.it/ oppure https://voice.tuodominio.it/health
+   - Deve rispondere: {"status":"ok","voice":true}
+
+6) CHAT (/iavod)
+   - In /iavod/index.html aggiungi subito dopo <head> (prima degli altri script):
+     <script>window.VOICE_WS_URL = 'wss://voice.tuodominio.it/voice';</script>
+   - Sostituisci voice.tuodominio.it con il dominio reale dove hai messo voicebot
+
+================================================================================
