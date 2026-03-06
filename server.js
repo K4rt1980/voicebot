@@ -17,7 +17,16 @@ const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSD
 function normalizeForItalianTTS(text) {
   if (!text || typeof text !== 'string') return '';
   let t = text.trim().replace(/\s+/g, ' ');
+  // Elisioni italiane: unire senza spazio così il TTS non dice "elle offerta" o "elle attivazione"
+  t = t.replace(/\b(l|un|quest|dell|all|dall|nell|sull|bell)'(\w+)/gi, '$1$2');
   t = t.replace(/(\w)'(\w)/g, '$1 $2');
+  // Vodafone Mobile → pronuncia corretta "mobail"
+  t = t.replace(/\bMobile\b/gi, 'mobail');
+  t = t.replace(/\bperche\b/gi, 'perché');
+  t = t.replace(/\bpoiche\b/gi, 'poiché');
+  // Numeri con virgola (23,95 → 23 virgola 95) così il TTS legge bene e non mangia "al mese"
+  t = t.replace(/(\d+),(\d+)/g, '$1 virgola $2');
+  t = t.replace(/\s*€\s*/g, ' euro ');
   t = t.replace(/\bW\b/gi, 'doppia vu');
   t = t.replace(/([a-zàèéìòù])W([a-zàèéìòù])/gi, '$1 doppia vu $2');
   t = t.replace(/WWW\./gi, 'doppia vu doppia vu doppia vu punto ');
