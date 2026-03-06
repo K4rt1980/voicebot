@@ -18,7 +18,11 @@ function normalizeForItalianTTS(text) {
   if (!text || typeof text !== 'string') return '';
   let t = text.trim().replace(/\s+/g, ' ');
   // Elisioni italiane: unire senza spazio così il TTS non dice "elle offerta" o "elle attivazione"
+  // Elisioni italiane: unire senza spazio così il TTS non dice "elle offerta" o "elle attivazione"
   t = t.replace(/\b(l|un|quest|dell|all|dall|nell|sull|bell)'(\w+)/gi, '$1$2');
+  t = t.replace(/c'è/g, 'ci è');
+  t = t.replace(/c'era/g, 'ci era');
+  t = t.replace(/c'erano/g, 'ci erano');
   t = t.replace(/(\w)'(\w)/g, '$1 $2');
   // Vodafone Mobile → pronuncia corretta "mobail"
   t = t.replace(/\bMobile\b/gi, 'mobail');
@@ -27,9 +31,10 @@ function normalizeForItalianTTS(text) {
   // Numeri con virgola (23,95 → 23 virgola 95) così il TTS legge bene e non mangia "al mese"
   t = t.replace(/(\d+),(\d+)/g, '$1 virgola $2');
   t = t.replace(/\s*€\s*/g, ' euro ');
-  t = t.replace(/\bW\b/gi, 'doppia vu');
-  t = t.replace(/([a-zàèéìòù])W([a-zàèéìòù])/gi, '$1 doppia vu $2');
-  t = t.replace(/WWW\./gi, 'doppia vu doppia vu doppia vu punto ');
+  t = t.replace(/\bFWA\b/gi, 'effe doppia vù a');
+  t = t.replace(/\bW\b/gi, 'doppia vù');
+  t = t.replace(/([a-zàèéìòù])W([a-zàèéìòù])/gi, '$1 doppia vù $2');
+  t = t.replace(/WWW\./gi, 'doppia vù doppia vù doppia vù punto ');
   t = t.replace(/\b(\d+)\s*GB\b/gi, '$1 gigabyte');
   t = t.replace(/\b(\d+)\s*MB\b/gi, '$1 megabyte');
   t = t.replace(/\bGB\b/gi, 'gigabyte').replace(/\bMB\b/gi, 'megabyte');
