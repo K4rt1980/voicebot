@@ -89,7 +89,7 @@ Dopo aver salvato e pubblicato la modifica a **index.html**, apri la chat, clicc
 |------|----------------|
 | **Percorso / Document root** | Cartella dove hai caricato voicebot (es. `/voicebot`) |
 | **File di avvio** | `server.js` |
-| **Variabili d’ambiente** | `ELEVENLABS_API_KEY` = chiave ElevenLabs (TTS + STT) |
+| **Variabili d’ambiente** | `ELEVENLABS_API_KEY` = chiave ElevenLabs (TTS + STT). Opzionale: `ELEVENLABS_VOICE_ID` = ID di una voce italiana da Voice Library (filtra Italian) per pronuncia sempre in italiano |
 | **Porta** | Lasciare default o impostare `PORT` (es. 3000) |
 | **Proxy / Node.js** | Abilitare app Node e proxy verso la porta dell’app (con supporto WebSocket per `/voice`) |
 

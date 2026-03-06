@@ -17,12 +17,29 @@ const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSD
 function normalizeForItalianTTS(text) {
   if (!text || typeof text !== 'string') return '';
   let t = text.trim().replace(/\s+/g, ' ');
-  // Elisioni italiane: unire senza spazio così il TTS non dice "elle offerta" o "elle attivazione"
-  // Elisioni italiane: unire senza spazio così il TTS non dice "elle offerta" o "elle attivazione"
-  t = t.replace(/\b(l|un|quest|dell|all|dall|nell|sull|bell)'(\w+)/gi, '$1$2');
+  // Rimuovi emoji e simboli (il TTS li legge come "happy", "kissa" ecc.)
+  t = t.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}]/gu, ' ');
+  t = t.replace(/\s+/g, ' ').trim();
+  // l' → la (così il TTS non dice "elle attivazione" / "ellepattivazione")
+  t = t.replace(/\bl'(\w+)/gi, 'la $1');
+  // Altre elisioni: unire senza spazio
+  t = t.replace(/\b(un|quest|dell|all|dall|nell|sull|bell)'(\w+)/gi, '$1$2');
   t = t.replace(/c'è/g, 'ci è');
   t = t.replace(/c'era/g, 'ci era');
   t = t.replace(/c'erano/g, 'ci erano');
+  t = t.replace(/cos'è/g, 'come è');
+  t = t.replace(/com'è/g, 'come è');
+  t = t.replace(/qual'è/g, 'quale è');
+  t = t.replace(/quant'è/g, 'quanto è');
+  t = t.replace(/dov'è/g, 'dove è');
+  t = t.replace(/com'era/g, 'come era');
+  t = t.replace(/cos'era/g, 'come era');
+  t = t.replace(/dov'era/g, 'dove era');
+  t = t.replace(/nient'altro/g, 'niente altro');
+  t = t.replace(/tutt'altro/g, 'tutto altro');
+  t = t.replace(/senz'altro/g, 'senza altro');
+  t = t.replace(/anch'io/g, 'anche io');
+  t = t.replace(/\bpo'\b/g, 'po');
   t = t.replace(/(\w)'(\w)/g, '$1 $2');
   // Vodafone Mobile → pronuncia corretta "mobail"
   t = t.replace(/\bMobile\b/gi, 'mobail');
@@ -31,7 +48,8 @@ function normalizeForItalianTTS(text) {
   // Numeri con virgola (23,95 → 23 virgola 95) così il TTS legge bene e non mangia "al mese"
   t = t.replace(/(\d+),(\d+)/g, '$1 virgola $2');
   t = t.replace(/\s*€\s*/g, ' euro ');
-  t = t.replace(/\bFWA\b/gi, 'effe doppia vù a');
+  t = t.replace(/\bFWA\b/gi, 'effevuà');
+  t = t.replace(/\bF\s+W\s+A\b/gi, 'effevuà');
   t = t.replace(/\bW\b/gi, 'doppia vù');
   t = t.replace(/([a-zàèéìòù])W([a-zàèéìòù])/gi, '$1 doppia vù $2');
   t = t.replace(/WWW\./gi, 'doppia vù doppia vù doppia vù punto ');
