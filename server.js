@@ -13,6 +13,41 @@ const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || '';
 // Per pronuncia italiana affidabile usa una voce italiana da https://elevenlabs.io/voice-library (filtra Italian)
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
 
+/** Normalizza il testo per lettura in italiano (sigle e termini spesso detti in inglese). */
+function normalizeForItalianTTS(text) {
+  if (!text || typeof text !== 'string') return '';
+  let t = text.trim().replace(/\s+/g, ' ');
+  t = t.replace(/(\w)'(\w)/g, '$1 $2');
+  t = t.replace(/\bW\b/gi, 'doppia vu');
+  t = t.replace(/([a-zàèéìòù])W([a-zàèéìòù])/gi, '$1 doppia vu $2');
+  t = t.replace(/WWW\./gi, 'doppia vu doppia vu doppia vu punto ');
+  t = t.replace(/\b(\d+)\s*GB\b/gi, '$1 gigabyte');
+  t = t.replace(/\b(\d+)\s*MB\b/gi, '$1 megabyte');
+  t = t.replace(/\bGB\b/gi, 'gigabyte').replace(/\bMB\b/gi, 'megabyte');
+  t = t.replace(/\b(\d+)\s*Mbps\b/gi, '$1 megabit al secondo');
+  t = t.replace(/\b(\d+)\s*Gbps\b/gi, '$1 gigabit al secondo');
+  t = t.replace(/\bMbps\b/gi, 'megabit al secondo').replace(/\bGbps\b/gi, 'gigabit al secondo');
+  t = t.replace(/\bTV\b/gi, 'televisione');
+  t = t.replace(/\bPC\b/gi, 'personal computer');
+  t = t.replace(/\bFAQ\b/gi, 'effe a cu');
+  t = t.replace(/\bADSL\b/gi, 'a d s l');
+  t = t.replace(/\bPDF\b/gi, 'p d f');
+  t = t.replace(/\bURL\b/gi, 'u r l');
+  t = t.replace(/\bUSB\b/gi, 'u s b');
+  t = t.replace(/\bHTML\b/gi, 'h t m l');
+  t = t.replace(/\bIP\b/gi, 'i p');
+  t = t.replace(/\bWi-?Fi\b/gi, 'waifai');
+  t = t.replace(/\bemail\b/gi, 'e mail');
+  t = t.replace(/\be-mail\b/gi, 'e mail');
+  t = t.replace(/\bonline\b/gi, 'on line');
+  t = t.replace(/\boffline\b/gi, 'off line');
+  t = t.replace(/\bdefault\b/gi, 'predefinito');
+  t = t.replace(/\bCAP\b(?=\s*\d)/gi, 'codice avviamento postale');
+  t = t.replace(/\beV\b/gi, 'electronvolt');
+  t = t.replace(/\b(\d+)\s*kWh\b/gi, '$1 kilowattora').replace(/\bkWh\b/gi, 'kilowattora');
+  return t.replace(/\s+/g, ' ').trim();
+}
+
 const server = http.createServer((req, res) => {
   const cors = {
     'Access-Control-Allow-Origin': '*',
@@ -74,7 +109,7 @@ if (ELEVENLABS_API_KEY && WebSocketServer) {
               ttsWs.send(JSON.stringify({ context_id: currentTtsContextId, close_context: true }));
               currentTtsContextId = null;
             } else if (j.type === 'speak' && typeof j.text === 'string' && ttsWs.readyState === WebSocket.OPEN) {
-              const text = String(j.text).trim();
+              const text = normalizeForItalianTTS(String(j.text).trim());
               if (!text) return;
               if (currentTtsContextId) {
                 ttsWs.send(JSON.stringify({ context_id: currentTtsContextId, close_context: true }));
