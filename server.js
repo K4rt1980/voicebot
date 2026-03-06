@@ -10,6 +10,7 @@ const WebSocketServer = require('ws').WebSocketServer;
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || '';
+// Per pronuncia italiana affidabile usa una voce italiana da https://elevenlabs.io/voice-library (filtra Italian)
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
 
 const server = http.createServer((req, res) => {
@@ -81,8 +82,11 @@ if (ELEVENLABS_API_KEY && WebSocketServer) {
               currentTtsContextId = 'ctx_' + Date.now();
               const textWithSpace = text.replace(/\s+/g, ' ').trim() + ' ';
               const voiceSettings = { stability: 0.75, similarity_boost: 0.8 };
-              ttsWs.send(JSON.stringify({ text: ' ', context_id: currentTtsContextId, voice_settings: voiceSettings }));
-              ttsWs.send(JSON.stringify({ text: textWithSpace, context_id: currentTtsContextId, flush: false }));
+              ttsWs.send(JSON.stringify({
+                text: textWithSpace,
+                context_id: currentTtsContextId,
+                voice_settings: voiceSettings
+              }));
               ttsWs.send(JSON.stringify({ context_id: currentTtsContextId, flush: true }));
             }
           } catch (_) {}
